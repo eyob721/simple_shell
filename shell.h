@@ -20,11 +20,9 @@
 #define SPACE 0
 #define ARGUMENT  1
 
-#define CHDIR_ERR -1
-
 /* EXIT CODES */
-#define EC_CMD_EXIT_FAILURE 2
-#define EC_CMD_NOT_FOUND 127
+#define CMD_EXIT_FAILURE 2
+#define CMD_NOT_FOUND 127
 
 extern char **environ;
 
@@ -36,6 +34,8 @@ extern char **environ;
  * struct shell_data - data structure used to pass informations needed to
  *                     executor functions.
  * @prg_name: the shell program name (av[0] of the shell program)
+ * @line_buff: line buffer
+ * @line_size: line buffer size
  * @cmd_ac: the argument count of a command
  * @cmd_av: the argument vector of a command
  * @line_no: the current line number of a command
@@ -57,6 +57,8 @@ extern char **environ;
 typedef struct shell_data
 {
 	char *prg_name;
+	char *line_buff;
+	int line_size;
 	int cmd_ac;
 	char **cmd_av; /* FREE this */
 	int line_no;
@@ -122,6 +124,7 @@ void execute_builtin_exit(shell_t *cmd);
 void execute_builtin_env(shell_t *sh);
 void execute_builtin_unsetenv(shell_t *sh);
 void execute_builtin_setenv(shell_t *sh);
+void execute_builtin_cd(shell_t *sh);
 void execute_system(shell_t *cmd);
 
 /* EXECUTOR FUNCTIONS */
@@ -129,5 +132,9 @@ int _unsetenv(char *var, shell_t *sh);
 int _setenv(char *var, char *value, shell_t *sh);
 char **build_new_environ(shell_t *sh, char **vp, char *nv, int ne_sz);
 
+void handle_cd_error(shell_t *sh);
+int cd_home(void);
+int cd_previous(void);
+int cd_path(char *given_path);
 /* ------------------------------------------------------------------------- */
 #endif

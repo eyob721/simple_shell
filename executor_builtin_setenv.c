@@ -1,4 +1,3 @@
-#include "lib.h"
 #include "shell.h"
 
 /**
@@ -14,15 +13,15 @@ void execute_builtin_setenv(shell_t *sh)
 	if (sh->cmd_ac != 3)
 	{
 		_dprintf(STDERR_FILENO, "%s: Usage: setenv VARIABLE VALUE\n",
-				sh->cmd_av[0]);
-		sh->exit_code = EC_CMD_EXIT_FAILURE;
+				sh->prg_name);
+		/* sh->exit_code = CMD_EXIT_FAILURE; */
 		return;
 	}
 	set_success = _setenv(sh->cmd_av[1], sh->cmd_av[2], sh);
 	if (!set_success)
 	{
-		_dprintf(STDERR_FILENO, "%s: setenv failed\n", sh->cmd_av[0]);
-		sh->exit_code = EXIT_FAILURE;
+		_dprintf(STDERR_FILENO, "%s: setenv failed\n", sh->prg_name);
+		/* sh->exit_code = CMD_EXIT_FAILURE; */
 		return;
 	}
 	sh->exit_code = EXIT_SUCCESS;
