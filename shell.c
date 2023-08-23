@@ -79,6 +79,7 @@ void (*get_executor(char *given_cmd))(shell_t *sh)
 		{"env", execute_builtin_env},
 		{"unsetenv", execute_builtin_unsetenv},
 		{"setenv", execute_builtin_setenv},
+		{"cd", execute_builtin_cd},
 		{NULL, execute_system}
 	};
 	int i = 0;
