@@ -72,7 +72,7 @@ char *concat_strings(unsigned int n, ...)
 char *_which(char *file)
 {
 	int path_len, file_found = 0, file_is_binary = 0;
-	char path_buf[PATH_MAX] = {0}, *env_path, *path_ptr, *colon_ptr;
+	char path_buf[PATH_MAX] = {0}, *env_path, *next_path, *path_end;
 	struct stat sb;
 
 	if (file == NULL || *file == '\0')
@@ -89,15 +89,16 @@ char *_which(char *file)
 	}
 	/* CASE 2: 'file' is a file name, so check the PATH directories */
 	env_path = _getenv("PATH");
-	if (env_path == NULL)
+	if (env_path == NULL || *env_path == '\0')
 		return (NULL);
-	path_ptr = env_path;
-	colon_ptr = _strchr(path_ptr, ':');
-	while (colon_ptr != NULL)
-	{
+	next_path = env_path;
+	do {
+		/* Find the end of the path */
+		path_end = _strchr(next_path, ':');
+		path_end = path_end == NULL ? _strchr(next_path, '\0') : path_end;
 		/* Construct an absolute file path */
-		path_len = colon_ptr - path_ptr;
-		_memcpy(path_buf, path_ptr, path_len);
+		path_len = path_end - next_path;
+		_memcpy(path_buf, next_path, path_len);
 		path_buf[path_len] = '\0';
 		_strcat(path_buf, "/");
 		_strcat(path_buf, file);
@@ -107,9 +108,8 @@ char *_which(char *file)
 		if (file_is_binary)
 			return (_strdup(path_buf));
 		/* Move to the next path in the PATH variable */
-		path_ptr = colon_ptr + 1;
-		colon_ptr = _strchr(path_ptr, ':');
-	}
+		next_path = *path_end != '\0' ? path_end + 1 : NULL;
+	} while (next_path != NULL);
 	return (NULL);
 }
 
