@@ -62,39 +62,38 @@ int _strlen(char *s)
 int _strcmp(char *s1, char *s2)
 {
 	if (s1 != NULL && s2 != NULL)
+	{
 		while (*s1 != '\0' || *s2 != '\0')
 		{
 			if (*s1 != *s2)
 				return (*s1 - *s2);
-			s1++, s2++;
+			++s1, ++s2;
 		}
+	}
+	return (0);
+}
+/**
+ * _strncmp - compares at most `n` bytes of two strings
+ * @s1: first string
+ * @s2: second string
+ * @n: number of bytes to compare
+ *
+ * Return: less than, greater than or equal to zero
+ */
+int _strncmp(char *s1, char *s2, int n)
+{
+	int i = 0;
+
+	if (s1 != NULL && s2 != NULL && n > 0)
+	{
+		while ((*s1 != '\0' || *s2 != '\0') && i < n)
+		{
+			if (*s1 != *s2)
+				return (*s1 - *s2);
+			++s1, ++s2, ++i;
+		}
+	}
 	return (0);
 }
 
-/**
- * _strchr - locates a character in a string
- * @s: a string
- * @c: a character
- *
- * Return: pointer to the character in the string, or NULL otherwise
- */
-char *_strchr(char *s, char c)
-{
-	if (s != NULL)
-	{
-		while (*s != '\0')
-		{
-			if (*s == c)
-				return (s);
-			s++;
-		}
-		/**
-		 * If `c` is also '\0',
-		 * then return a pointer to the '\0' character in the string
-		 */
-		if (c == '\0')
-			return (s);
-	}
-	return (NULL);
-}
 

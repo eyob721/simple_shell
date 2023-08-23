@@ -1,6 +1,10 @@
 #ifndef PRINTF_H
 #define PRINTF_H
 
+/* ------------------------------------------------------------------------- */
+/*                      PRINTF - HEADERS AND CONSTANTS                       */
+/* ------------------------------------------------------------------------- */
+
 #include <stdlib.h>
 #include <stdarg.h>
 #include <unistd.h>
@@ -25,6 +29,10 @@
 #define BIN_BUF_SIZE 33
 
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
+
+/* ------------------------------------------------------------------------- */
+/*                         PRINTF - DATA STRUCTURE                           */
+/* ------------------------------------------------------------------------- */
 
 /**
  * struct format_data - data structure to hold format data
@@ -85,6 +93,7 @@ typedef struct format_field_data
 	int jst;
 	int prc;
 } fmt_field_data_t;
+
 /**
  * struct format_handler - data structure for conversion event
  *						   handler functions
@@ -97,42 +106,46 @@ typedef struct format_handler
 	int (*handle)(fmt_data_t *, char *, int *);
 } fmt_hndlr_t;
 
-/* Format syntax utilities */
+/* ------------------------------------------------------------------------- */
+/*                            PRINTF - SUPPORT                               */
+/* ------------------------------------------------------------------------- */
+
+char *get_specifier(char *s, fmt_data_t *f);
+int (*get_specifier_handler(char chr))(fmt_data_t *, char *, int *);
+void initialize_format_data(fmt_data_t *f);
+int print_invalid_syntax(char **p, fmt_data_t *f, char *buf, int *ctr);
+
+/* ------------------------------------------------------------------------- */
+/*                            PRINTF - SYNTAX                                */
+/* ------------------------------------------------------------------------- */
 void check_flag(char **s, fmt_data_t *f);
 void check_width(char **s, fmt_data_t *f);
 void check_precision(char **s, fmt_data_t *f);
 void check_modifier(char **s, fmt_data_t *f);
 void check_specifier(char **s, fmt_data_t *f);
 
-/* Integer converison utilities */
-char *convert_int_to_str(long int num, char *buf, int buf_size);
-char *convert_uint_to_base_str(int base, unsigned long int num, char ltr_case,
-							char *buf, int buf_size);
-char *convert_addr_to_hex_str(void *addr, char *buf, int buf_size);
+/* ------------------------------------------------------------------------- */
+/*                            PRINTF - BUFFER                                */
+/* ------------------------------------------------------------------------- */
 
-/* Buffer utilities */
 int _putchar_buf(int fd, char c, char *buf, int *ctr);
 int _puts_buf(int fd, char *str, char *buf, int *ctr);
 int _puts_nbytes_buf(int fd, char *str, int n, char *buf, int *ctr);
 
-/* Formatting utilities */
+/* ------------------------------------------------------------------------- */
+/*                          PRINTF - FORMATTING                              */
+/* ------------------------------------------------------------------------- */
+
 char *format_character_output(char *str, int *fmt_len, fmt_data_t *f);
 void write_character_format(fmt_field_data_t *fd);
 char *format_integer_output(char *int_str, char *prefix, fmt_data_t *f);
 void write_integer_format(fmt_field_data_t *fd);
 
-/* printf family implementation functions */
-int _printf(const char *format, ...);
-int _dprintf(int fd, const char *format, ...);
-int _vdprintf(int fd, const char *format, va_list args);
+/* ------------------------------------------------------------------------- */
+/*                          PRINTF - CONVERSION                              */
+/* ------------------------------------------------------------------------- */
 
-/* _printf function utilities */
-char *get_specifier(char *s, fmt_data_t *f);
-int (*get_specifier_handler(char chr))(fmt_data_t *, char *, int *);
-void initialize_format_data(fmt_data_t *f);
-int print_invalid_syntax(char **p, fmt_data_t *f, char *buf, int *ctr);
-
-/* Conversion handler functions */
+/* CONVERSION HANDLERS */
 int handle_char(fmt_data_t *f, char *buf, int *ctr);
 int handle_string(fmt_data_t *f, char *buf, int *ctr);
 int handle_percent(fmt_data_t *f, char *buf, int *ctr);
@@ -141,9 +154,12 @@ int handle_unsigned(fmt_data_t *f, char *buf, int *ctr);
 int handle_octal(fmt_data_t *f, char *buf, int *ctr);
 int handle_hexadecimal(fmt_data_t *f, char *buf, int *ctr);
 int handle_pointer(fmt_data_t *f, char *buf, int *ctr);
-int handle_custom_string(fmt_data_t *f, char *buf, int *ctr);
-int handle_custom_binary(fmt_data_t *f, char *buf, int *ctr);
-int handle_custom_reverse_string(fmt_data_t *f, char *buf, int *ctr);
-int handle_custom_rot13(fmt_data_t *f, char *buf, int *ctr);
 
+/* INTEGER CONVERISON UTILITIES */
+char *convert_int_to_str(long int num, char *buf, int buf_size);
+char *convert_uint_to_base_str(int base, unsigned long int num, char ltr_case,
+							char *buf, int buf_size);
+char *convert_addr_to_hex_str(void *addr, char *buf, int buf_size);
+
+/* ------------------------------------------------------------------------- */
 #endif
