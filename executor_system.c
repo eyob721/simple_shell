@@ -17,7 +17,7 @@ void execute_system(shell_t *sh)
 	{
 		_dprintf(STDERR_FILENO, "%s: %d: %s: not found\n",
 				sh->prg_name, sh->line_no, sh->cmd_av[0]);
-		sh->exit_code = EC_CMD_NOT_FOUND;
+		sh->exit_code = CMD_NOT_FOUND;
 		return;
 	}
 	pid = fork();
