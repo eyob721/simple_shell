@@ -84,6 +84,7 @@ typedef struct executor
 /* ------------------------------------------------------------------------- */
 
 void initialize_shell_data(shell_t *sh, char **av);
+void execute_commands(shell_t *sh);
 void (*get_executor(char *given_cmd))(shell_t *cmd);
 
 /* ------------------------------------------------------------------------- */
@@ -116,10 +117,16 @@ int get_environ_count(void);
 char **get_environ_copy(int count);
 char **get_env_ptr(char *var);
 
+/* COMMAND UTILS */
+char *cmd_tok(char *cmd_line, char **next_cmd, char *next_opr);
+
 /* TEST UTILS */
 void _printenv_test(int env_count, char **env_cur_start, char **env_cur_end);
 
-/* EXECUTORS */
+/* ------------------------------------------------------------------------- */
+/*                            SHELL - EXECUTORS                              */
+/* ------------------------------------------------------------------------- */
+
 void execute_builtin_exit(shell_t *cmd);
 void execute_builtin_env(shell_t *sh);
 void execute_builtin_unsetenv(shell_t *sh);
@@ -136,5 +143,6 @@ void handle_cd_error(shell_t *sh);
 int cd_home(char *path);
 int cd_previous(void);
 int cd_path(char *given_path);
+
 /* ------------------------------------------------------------------------- */
 #endif
