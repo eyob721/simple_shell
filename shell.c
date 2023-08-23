@@ -7,7 +7,7 @@
  *
  * Return: depends on the exit code of the last command run
  */
-int main(int __attribute__((unused)) ac, char __attribute__((unused)) * *av)
+int main(int __attribute__((unused)) ac, char __attribute__((unused)) **av)
 {
 	int fd = STDIN_FILENO, mode, bytes_read;
 	void (*execute_cmd)(shell_t *cmd) = NULL;
@@ -15,8 +15,7 @@ int main(int __attribute__((unused)) ac, char __attribute__((unused)) * *av)
 
 	initialize_shell_data(&shell, av);
 	mode = isatty(fd);
-	do
-	{
+	do {
 		if (mode == INTERACTIVE_MODE)
 		{
 			write(STDOUT_FILENO, "($) ", 5);

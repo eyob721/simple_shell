@@ -1,3 +1,4 @@
+#include "lib.h"
 #include "shell.h"
 
 /**
@@ -7,10 +8,12 @@
  * Return: void
  * Description: The function follows the following steps
  *     - STEP 1:- First get the OLDPWD path, which is the current directory
- *                path before changeing directory
+ *                path before changeing directory.
  *     - STPE 2:- Change to the given directory.
  *     - STEP 3:- Then get the PWD path, which is the current directory path
- *                after changeing directory
+ *                after changeing directory.
+ *              - Here the PWD must be printed, if the cd is given the argument
+ *                "-", which cd to previous.
  *     - STEP 4:- Update PWD and OLDPWD in the environment.
  */
 void execute_builtin_cd(shell_t *sh)
@@ -26,7 +29,6 @@ void execute_builtin_cd(shell_t *sh)
 		handle_cd_error(sh);
 		return;
 	}
-
 	/* STEP 2: Change directory */
 	path_is_home = path == NULL || _strcmp(path, "~") == 0;
 	path_is_previous = _strcmp(path, "-") == 0;
@@ -41,7 +43,6 @@ void execute_builtin_cd(shell_t *sh)
 		handle_cd_error(sh);
 		return;
 	}
-
 	/* STEP 3: Save the PWD */
 	getcwd_is_success = getcwd(pwd, PATH_MAX) != NULL;
 	if (!getcwd_is_success)
@@ -49,7 +50,9 @@ void execute_builtin_cd(shell_t *sh)
 		handle_cd_error(sh);
 		return;
 	}
-
+	/* Print PWD, if "-" is used */
+	if (path_is_previous)
+		_printf("%s\n", pwd);
 	/* STEP 4: Update PWD and OLDPWD of the environment */
 	_setenv("OLDPWD", oldpwd, sh);
 	_setenv("PWD", pwd, sh);
