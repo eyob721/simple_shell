@@ -30,10 +30,10 @@ int main(int __attribute__((unused))ac, char __attribute__((unused))**av)
 			break;
 		}
 		++shell.line_no;
-		if (*line_buff == '\0') /* Empty command */
-			continue;
 		shell.cmd_ac = get_argument_count(line_buff);
 		shell.cmd_av = get_argument_vector(line_buff, shell.cmd_ac);
+		if (shell.cmd_av == NULL) /* Empty command */
+			continue;
 		execute_cmd = get_executor(shell.cmd_av[0]);
 		if (execute_cmd != NULL)
 			execute_cmd(&shell);
