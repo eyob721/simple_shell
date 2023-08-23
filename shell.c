@@ -9,9 +9,8 @@
  */
 int main(int __attribute__((unused))ac, char __attribute__((unused))**av)
 {
-	int fd = STDIN_FILENO, mode, bytes_read, line_size = 0;
+	int fd = STDIN_FILENO, mode, bytes_read;
 	void (*execute_cmd)(shell_t *cmd) = NULL;
-	char *line_buff = NULL;
 	shell_t shell;
 
 	initialize_shell_data(&shell, av);
@@ -22,24 +21,23 @@ int main(int __attribute__((unused))ac, char __attribute__((unused))**av)
 			write(STDOUT_FILENO, "($) ", 5);
 			fflush(stdout);
 		}
-		bytes_read = read_line(fd, &line_buff, &line_size);
-		if (bytes_read == READ_EOF || bytes_read == READ_ERR)
+		bytes_read = read_line(fd, &shell.line_buff, &shell.line_size);
+		if (bytes_read != READ_EOF && bytes_read != READ_ERR)
 		{
-			if (mode == INTERACTIVE_MODE)
-				_putchar('\n');
-			break;
+			++shell.line_no;
+			shell.cmd_ac = get_argument_count(shell.line_buff);
+			shell.cmd_av = get_argument_vector(shell.line_buff, shell.cmd_ac);
+			if (shell.cmd_av == NULL) /* Empty command */
+				continue;
+			execute_cmd = get_executor(shell.cmd_av[0]);
+			if (execute_cmd != NULL)
+				execute_cmd(&shell);
+			free_string_array(shell.cmd_av, shell.cmd_ac);
 		}
-		++shell.line_no;
-		if (*line_buff == '\0') /* Empty command */
-			continue;
-		shell.cmd_ac = get_argument_count(line_buff);
-		shell.cmd_av = get_argument_vector(line_buff, shell.cmd_ac);
-		execute_cmd = get_executor(shell.cmd_av[0]);
-		if (execute_cmd != NULL)
-			execute_cmd(&shell);
-		free_string_array(shell.cmd_av, shell.cmd_ac);
-	} while (execute_cmd != execute_builtin_exit);
-	free(line_buff);
+	} while (bytes_read != READ_EOF && bytes_read != READ_ERR);
+	if (bytes_read == READ_EOF && mode == INTERACTIVE_MODE)
+		_putchar('\n');
+	free(shell.line_buff);
 	free_environ(shell.env_cur_start);
 	return (shell.exit_code);
 }
@@ -54,6 +52,8 @@ int main(int __attribute__((unused))ac, char __attribute__((unused))**av)
 void initialize_shell_data(shell_t *sh, char **av)
 {
 	sh->prg_name = *av;
+	sh->line_buff = NULL;
+	sh->line_size = 0;
 	sh->line_no = 0;
 	sh->cmd_ac = 0;
 	sh->cmd_av = NULL;

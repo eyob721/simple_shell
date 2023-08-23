@@ -36,6 +36,8 @@ extern char **environ;
  * struct shell_data - data structure used to pass informations needed to
  *                     executor functions.
  * @prg_name: the shell program name (av[0] of the shell program)
+ * @line_buff: line buffer
+ * @line_size: line buffer size
  * @cmd_ac: the argument count of a command
  * @cmd_av: the argument vector of a command
  * @line_no: the current line number of a command
@@ -57,6 +59,8 @@ extern char **environ;
 typedef struct shell_data
 {
 	char *prg_name;
+	char *line_buff;
+	int line_size;
 	int cmd_ac;
 	char **cmd_av; /* FREE this */
 	int line_no;
