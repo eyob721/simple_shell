@@ -12,15 +12,15 @@ void execute_builtin_unsetenv(shell_t *sh)
 
 	if (sh->cmd_ac != 2)
 	{
-		_dprintf(STDERR_FILENO, "%s: Usage: unsetenv VARIABLE\n", sh->cmd_av[0]);
-		sh->exit_code = EC_CMD_EXIT_FAILURE;
+		_dprintf(STDERR_FILENO, "%s: Usage: unsetenv VARIABLE\n", sh->prg_name);
+		/* sh->exit_code = CMD_EXIT_FAILURE; */
 		return;
 	}
 	unset_success = _unsetenv(sh->cmd_av[1], sh);
 	if (!unset_success)
 	{
-		_dprintf(STDERR_FILENO, "%s: unsetenv failed\n", sh->cmd_av[0]);
-		sh->exit_code = EXIT_FAILURE;
+		_dprintf(STDERR_FILENO, "%s: unsetenv failed\n", sh->prg_name);
+		/* sh->exit_code = CMD_EXIT_FAILURE; */
 		return;
 	}
 	sh->exit_code = EXIT_SUCCESS;
