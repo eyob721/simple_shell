@@ -19,7 +19,7 @@
 void execute_builtin_cd(shell_t *sh)
 {
 	char oldpwd[PATH_MAX] = {0}, pwd[PATH_MAX] = {0}, *path = sh->cmd_av[1];
-	int getcwd_is_success = 0, chdir_is_success = 0;
+	int getcwd_is_success = 0, chdir_return = 0;
 	int path_is_home, path_is_previous;
 
 	/* STEP 1: Save the OLDPWD */
@@ -33,12 +33,12 @@ void execute_builtin_cd(shell_t *sh)
 	path_is_home = path == NULL || _strcmp(path, "~") == 0;
 	path_is_previous = _strcmp(path, "-") == 0;
 	if (path_is_home)
-		chdir_is_success = cd_home();
+		chdir_return = cd_home(path);
 	else if (path_is_previous)
-		chdir_is_success = cd_previous();
+		chdir_return = cd_previous();
 	else
-		chdir_is_success = cd_path(path);
-	if (!chdir_is_success)
+		chdir_return = cd_path(path);
+	if (chdir_return == -1)
 	{
 		handle_cd_error(sh);
 		return;
@@ -51,7 +51,7 @@ void execute_builtin_cd(shell_t *sh)
 		return;
 	}
 	/* Print PWD, if "-" is used */
-	if (path_is_previous)
+	if (!path_is_home && path_is_previous)
 		_printf("%s\n", pwd);
 	/* STEP 4: Update PWD and OLDPWD of the environment */
 	_setenv("OLDPWD", oldpwd, sh);
@@ -76,21 +76,31 @@ void handle_cd_error(shell_t *sh)
  * cd_home - changes directory to HOME
  *
  * Return: 0 on success, or -1 on error
+ * Description:
+ *     - In the case where the HOME doesn't exist, it is considered an error
+ *       only if the argument is the tilde character (i.e. "~").
+ *     - It will not be considered as an error, if there are no arguments
+ *       passed (i.e. NULL).
  */
-int cd_home(void)
+int cd_home(char *path)
 {
 	char *home_path = NULL;
 
 	home_path = _getenv("HOME");
-	if (home_path == NULL)
+	if (path == NULL && home_path == NULL)
 		return (0);
-	return (chdir(home_path) == 0);
+	else if (home_path == NULL)
+		return (-1);
+	return (chdir(home_path));
 }
 
 /**
  * cd_previous - changes directory back to OLDPWD
  *
  * Return: 0 on success, or -1 on error
+ * Description: In the case where the OLDPWD doesn't exist, it will not be
+ *              considered as an error, but rather he function will just
+ *              simply not call chdir and return back.
  */
 int cd_previous(void)
 {
@@ -99,7 +109,7 @@ int cd_previous(void)
 	prev_path = _getenv("OLDPWD");
 	if (prev_path == NULL)
 		return (0);
-	return (chdir(prev_path) == 0);
+	return (chdir(prev_path));
 }
 
 /**
@@ -110,5 +120,5 @@ int cd_previous(void)
  */
 int cd_path(char *path)
 {
-	return (chdir(path) == 0);
+	return (chdir(path));
 }
