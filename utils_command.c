@@ -27,8 +27,19 @@ char *cmd_tok(char *cmd_line, char **next_cmd, char *next_opr)
 	if (*next_cmd != NULL)
 	{
 		*next_opr = **next_cmd; /* Save the next operator character */
-		**next_cmd = '\0'; /* Terminate current command */
-		++(*next_cmd); /* Go to the next starting point */
+		**next_cmd = '\0';		/* Terminate current command */
+		++(*next_cmd);			/* Go to the next starting point */
 	}
 	return (cmd_start);
+}
+
+/**
+ * remove_comments - removes comments from a command line
+ * @cmd_line: the command line
+ *
+ * Return: pointer to the edited command line
+ */
+char *remove_comments(char *cmd_line)
+{
+	return (cmd_line);
 }

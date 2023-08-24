@@ -7,14 +7,15 @@
  *
  * Return: depends on the exit code of the last command run
  */
-int main(int __attribute__((unused)) ac, char __attribute__((unused)) **av)
+int main(int __attribute__((unused)) ac, char __attribute__((unused)) * *av)
 {
 	int fd = STDIN_FILENO, mode, bytes_read;
 	shell_t shell;
 
 	initialize_shell_data(&shell, av);
 	mode = isatty(fd);
-	do {
+	do
+	{
 		if (mode == INTERACTIVE_MODE)
 		{
 			write(STDOUT_FILENO, "($) ", 5);
@@ -31,6 +32,7 @@ int main(int __attribute__((unused)) ac, char __attribute__((unused)) **av)
 		_putchar('\n');
 	free(shell.line_buff);
 	free_environ(shell.env_cur_start);
+	free_alias_list(shell.alias_head);
 	return (shell.exit_code);
 }
 
@@ -55,6 +57,10 @@ void initialize_shell_data(shell_t *sh, char **av)
 	sh->env_count = get_environ_count();
 	environ = get_environ_copy(sh->env_count);
 	sh->env_cur_start = sh->env_cur_end = environ + sh->env_count;
+
+	/* Alias Initialization */
+	sh->alias_head = NULL;
+	sh->alias_tail = NULL;
 }
 
 /**
@@ -71,8 +77,10 @@ void execute_commands(shell_t *sh)
 	cmd = cmd_tok(sh->line_buff, &next_cmd, &next_opr);
 	while (cmd != NULL)
 	{
+		cmd = substitute_alias_cmd(sh->alias_head, cmd);
 		sh->cmd_ac = get_argument_count(cmd);
 		sh->cmd_av = get_argument_vector(cmd, sh->cmd_ac);
+		free(cmd);
 		execute = get_executor(sh->cmd_av[0]);
 		execute(sh);
 		free_string_array(sh->cmd_av, sh->cmd_ac);
@@ -99,6 +107,7 @@ void (*get_executor(char *given_cmd))(shell_t *sh)
 		{"unsetenv", execute_builtin_unsetenv},
 		{"setenv", execute_builtin_setenv},
 		{"cd", execute_builtin_cd},
+		{"alias", execute_builtin_alias},
 		{NULL, execute_system}};
 	int i = 0;
 

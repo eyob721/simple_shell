@@ -21,6 +21,7 @@ void execute_builtin_exit(shell_t *sh)
 	}
 	free(sh->line_buff);
 	free_environ(sh->env_cur_start);
+	free_alias_list(sh->alias_head);
 	free_string_array(sh->cmd_av, sh->cmd_ac);
 	exit(sh->exit_code);
 }

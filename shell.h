@@ -31,6 +31,19 @@ extern char **environ;
 /* ------------------------------------------------------------------------- */
 
 /**
+ * struct shell_alias - a data structure used for alias list
+ * @alias_name: the alias name
+ * @real_name: the real name
+ * @next: pointer to the next alias node
+ */
+typedef struct shell_alias
+{
+	char *alias_name;
+	char *real_name;
+	struct shell_alias *next;
+} alias_t;
+
+/**
  * struct shell_data - data structure used to pass informations needed to
  *                     executor functions.
  * @prg_name: the shell program name (av[0] of the shell program)
@@ -44,6 +57,8 @@ extern char **environ;
  * @env_cur_start: pointer to the start of newly added variables in the
  *                 environ copy
  * @env_cur_end: pointer to the end of the environ copy
+ * @alias_head: head of the alias list
+ * @alias_tail: tail of the alias list
  *
  * Description:
  *     - The `env_cur_start` is used for tracking newly allocated variables. It
@@ -66,6 +81,8 @@ typedef struct shell_data
 	int env_count;
 	char **env_cur_start;
 	char **env_cur_end;
+	alias_t *alias_head;
+	alias_t *alias_tail;
 } shell_t;
 
 /**
@@ -109,6 +126,7 @@ void remove_quotations(char *arg_start, char **arg_end);
 /* CLEANUP UTILS */
 void free_string_array(char **str_arr, int height);
 void free_environ(char **env_cur_start);
+void free_alias_list(alias_t *head);
 
 /* ENVIRONMENT UTILS */
 void _printenv(char *var);
@@ -119,6 +137,13 @@ char **get_env_ptr(char *var);
 
 /* COMMAND UTILS */
 char *cmd_tok(char *cmd_line, char **next_cmd, char *next_opr);
+
+/* ALIAS UTILS */
+void print_alias_list(alias_t *head);
+int print_alias_node(alias_t *head, char *given_name);
+int add_alias_node(alias_t **head, alias_t **tail, char *node);
+alias_t *search_alias_list(alias_t *head, char *given_name);
+char *substitute_alias_cmd(alias_t *head, char *cmd);
 
 /* TEST UTILS */
 void _printenv_test(int env_count, char **env_cur_start, char **env_cur_end);
@@ -132,6 +157,7 @@ void execute_builtin_env(shell_t *sh);
 void execute_builtin_unsetenv(shell_t *sh);
 void execute_builtin_setenv(shell_t *sh);
 void execute_builtin_cd(shell_t *sh);
+void execute_builtin_alias(shell_t *sh);
 void execute_system(shell_t *cmd);
 
 /* EXECUTOR FUNCTIONS */
