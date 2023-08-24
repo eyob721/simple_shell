@@ -21,7 +21,7 @@ int main(int __attribute__((unused)) ac, char __attribute__((unused)) **av)
 			_dprintf(STDERR_FILENO, "%s: %d: Can't open %s\n",
 					shell.prg_name, shell.line_no, av[1]);
 			shell.exit_code = CMD_NOT_FOUND;
-			free_environ(shell.env_cur_start);
+			free_environ();
 			return (shell.exit_code);
 		}
 	}
@@ -42,7 +42,7 @@ int main(int __attribute__((unused)) ac, char __attribute__((unused)) **av)
 	if (bytes_read == READ_EOF && mode == INTERACTIVE_MODE)
 		_putchar('\n');
 	free(shell.line_buff);
-	free_environ(shell.env_cur_start);
+	free_environ();
 	free_alias_list(shell.alias_head);
 	if (ac >= 2)
 		close(fd);
@@ -69,7 +69,6 @@ void initialize_shell_data(shell_t *sh, char **av)
 	/* Environment Initialization */
 	sh->env_count = get_environ_count();
 	environ = get_environ_copy(sh->env_count);
-	sh->env_cur_start = sh->env_cur_end = environ + sh->env_count;
 
 	/* Alias Initialization */
 	sh->alias_head = NULL;

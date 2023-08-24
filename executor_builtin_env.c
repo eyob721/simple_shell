@@ -15,6 +15,6 @@ void execute_builtin_env(shell_t *sh)
 		return;
 	}
 	if (_strcmp("test", sh->cmd_av[1]) == 0)
-		_printenv_test(sh->env_count, sh->env_cur_start, sh->env_cur_end);
+		_printenv_test(sh->env_count);
 	sh->exit_code = EXIT_FAILURE;
 }

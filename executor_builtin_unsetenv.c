@@ -53,7 +53,7 @@ int _unsetenv(char *var, shell_t *sh)
 
 	/* STEP 2: Determine if the variable exists */
 	/* If the variable doesn't exist, there is nothing to remove */
-	var_ptr = get_env_ptr(var);
+	var_ptr = get_var_ptr(var);
 	var_exists = var_ptr != NULL;
 	if (!var_exists)
 		return (1);

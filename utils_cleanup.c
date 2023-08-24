@@ -20,17 +20,17 @@ void free_string_array(char **str_arr, int height)
 
 /**
  * free_environ - frees the allocated environ
- * @env_cur_start: pointer to the start of newly added variables in the
- *                 environ copy
  *
  * Return: void
  */
-void free_environ(char **env_cur_start)
+void free_environ(void)
 {
+	int i = 0;
+
 	if (environ == NULL)
 		return;
-	while (env_cur_start != NULL && *env_cur_start != NULL)
-		free(*(env_cur_start++));
+	while (environ[i] != NULL)
+		free(environ[i++]);
 	free(environ);
 }
 

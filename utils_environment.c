@@ -80,9 +80,7 @@ int get_environ_count(void)
 {
 	int i = 0;
 
-	if (environ == NULL)
-		return (0);
-	while (environ[i] != NULL)
+	while (environ != NULL && environ[i] != NULL)
 		++i;
 	return (i);
 }
@@ -111,26 +109,29 @@ char **get_environ_copy(int count)
 	if (env_copy == NULL)
 		return (NULL);
 
-	/* Point new environ variables to old environ variables */
+	/* Copy environ variables */
 	for (i = 0; environ[i] != NULL; ++i)
-		env_copy[i] = environ[i];
-
-	/* Set extra spaces to NULL */
-	while (i <= count)
-		env_copy[i++] = NULL;
+	{
+		env_copy[i] = _strdup(environ[i]);
+		if (env_copy[i] == NULL)
+		{
+			free_string_array(env_copy, i);
+			return (NULL);
+		}
+	}
+	env_copy[count] = NULL;
 
 	return (env_copy);
 }
 
 /**
- * get_env_ptr - gets the address on the environ block (row), that has
- *               the given variable
- * @var: a given variable
+ * get_var_ptr - gets the address of a variable on the environ block (row)
+ * @var: a variable
  *
  * Return: pointer to the row on the environ with the given variable, or
  *         NULL otherwise.
  */
-char **get_env_ptr(char *var)
+char **get_var_ptr(char *var)
 {
 	int i = 0, len = 0, variable_is_found = 0;
 	char **env_ptr = NULL, *eql_sign_ptr;

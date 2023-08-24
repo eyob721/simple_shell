@@ -55,16 +55,16 @@ int _setenv(char *var, char *value, shell_t *sh)
 		return (0);
 
 	/* STEP 2: Determine if the variable exists */
-	var_ptr = get_env_ptr(var);
+	var_ptr = get_var_ptr(var);
 	var_exists = var_ptr != NULL;
 
 	/* STEP 3: Allocate memory for the new variable and environ block */
 	new_var = concat_strings(3, var, "=", value);
 	if (new_var == NULL)
 		return (0);
-	new_env_size = var_exists ? sh->env_count + 1 : sh->env_count + 2;
 
 	/* STEP 4: Build the new environ */
+	new_env_size = var_exists ? sh->env_count + 1 : sh->env_count + 2;
 	new_env = build_new_environ(sh, var_ptr, new_var, new_env_size);
 	if (new_env == NULL)
 	{
@@ -91,7 +91,7 @@ char **build_new_environ(shell_t *sh, char **vp, char *nv, int ne_sz)
 {
 	char **cur_env = environ, **new_env = NULL;
 	int i_cur = 0, i_new = 0;
-	int var_exists, var_is_freeable, adding_new_variable = nv != NULL;
+	int var_exists, adding_new_variable = nv != NULL;
 
 	new_env = malloc(sizeof(char *) * ne_sz);
 	if (new_env == NULL)
@@ -99,32 +99,28 @@ char **build_new_environ(shell_t *sh, char **vp, char *nv, int ne_sz)
 
 	/* If the variable exists, and is freeable, it must be removed */
 	var_exists = vp != NULL;
-	var_is_freeable = vp >= sh->env_cur_start;
-
-	if (var_exists && var_is_freeable)
-		free(*vp);
 
 	/* Assign variables to the new environ */
 	while (i_cur <= sh->env_count)
 	{
-		if (cur_env + i_cur == vp) /* Skip existing variable to remove it */
-			++i_cur;
+		if (cur_env + i_cur == vp)
+		{
+			free(cur_env[i_cur]);
+			if (adding_new_variable && var_exists) /* Overwriting */
+				cur_env[i_cur] = nv;
+			else if (!adding_new_variable && var_exists) /* Removing */
+				++i_cur;
+		}
 		new_env[i_new] = cur_env[i_cur];
 		++i_cur, ++i_new;
 	}
-	if (adding_new_variable)
+	if (adding_new_variable && !var_exists) /* Add a new variable */
 	{
 		new_env[i_new - 1] = nv;
 		new_env[i_new] = NULL;
 	}
 
-	/* Update the `env_cur_start`, `env_cur_end` and the `env_count` */
-	sh->env_cur_start = new_env + (sh->env_cur_start - cur_env);
-	sh->env_cur_end = new_env + i_new;
-	if (var_exists && !var_is_freeable)
-		--sh->env_cur_start;
-	if (!adding_new_variable)
-		--sh->env_cur_end;
+	/* Update the environ count */
 	sh->env_count = ne_sz - 1;
 
 	return (new_env);

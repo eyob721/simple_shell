@@ -19,9 +19,11 @@ void execute_builtin_exit(shell_t *sh)
 		}
 		sh->exit_code = _atoi(sh->cmd_av[1]);
 	}
+
 	free(sh->line_buff);
-	free_environ(sh->env_cur_start);
+	free_environ();
 	free_alias_list(sh->alias_head);
 	free_string_array(sh->cmd_av, sh->cmd_ac);
+
 	exit(sh->exit_code);
 }
