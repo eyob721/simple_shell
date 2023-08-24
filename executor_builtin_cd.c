@@ -1,4 +1,3 @@
-#include "lib.h"
 #include "shell.h"
 
 /**
@@ -8,10 +7,10 @@
  * Return: void
  * Description: The function follows the following steps
  *     - STEP 1:- First get the OLDPWD path, which is the current directory
- *                path before changeing directory.
+ *                path before changing directory.
  *     - STPE 2:- Change to the given directory.
  *     - STEP 3:- Then get the PWD path, which is the current directory path
- *                after changeing directory.
+ *                after changing directory.
  *              - Here the PWD must be printed, if the cd is given the argument
  *                "-", which cd to previous.
  *     - STEP 4:- Update PWD and OLDPWD in the environment.
@@ -74,6 +73,7 @@ void handle_cd_error(shell_t *sh)
 
 /**
  * cd_home - changes directory to HOME
+ * @given_path: given path to cd
  *
  * Return: 0 on success, or -1 on error
  * Description:
@@ -82,12 +82,12 @@ void handle_cd_error(shell_t *sh)
  *     - It will not be considered as an error, if there are no arguments
  *       passed (i.e. NULL).
  */
-int cd_home(char *path)
+int cd_home(char *given_path)
 {
 	char *home_path = NULL;
 
 	home_path = _getenv("HOME");
-	if (path == NULL && home_path == NULL)
+	if (given_path == NULL && home_path == NULL)
 		return (0);
 	else if (home_path == NULL)
 		return (-1);

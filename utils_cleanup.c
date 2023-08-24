@@ -33,3 +33,23 @@ void free_environ(char **env_cur_start)
 		free(*(env_cur_start++));
 	free(environ);
 }
+
+/**
+ * free_alias_list - a function that frees the alias list
+ * @head: head of the alias list
+ *
+ * Return: void
+ */
+void free_alias_list(alias_t *head)
+{
+	alias_t *tmp;
+
+	while (head != NULL)
+	{
+		tmp = head;
+		head = head->next;
+		free(tmp->alias_name);
+		free(tmp->real_name);
+		free(tmp);
+	}
+}

@@ -20,6 +20,28 @@ In UNIX the most popular shell programs are:
 
 This project focuses on implementing the original shell program sh (/bin/sh).
 
+## Features
+
+The shell handles some builtin commands and system commands. The following builtin commands are implemented.
+
+| Commands | Type | Description |
+| --- | --- | --- |
+| exit | builtin | Exits from the shell. It can take an exit code to exit with as argument. |
+| env | builtin | Prints all of the environment variables. |
+| setenv | builtin | Adds or overwrites an environment variable. Just like the set command in sh. |
+| unsetenv | builtin | Removes an environment variable. Just like unset command in sh. |
+| cd  | builtin | Change directory. |
+| alias | builtin | Defines an alias for a command. |
+
+The shell also handles
+
+- command separator ;
+- Logical operators && and ||
+- comments, and
+- variable expansions
+
+It can also take a file as input and run commands.
+
 ## Restrictions
 
 There are restrictions on the functions and system calls we can use on this project. The only allowed functions and system calls are listed below.
@@ -57,3 +79,17 @@ There are restrictions on the functions and system calls we can use on this proj
 - `write` (man 2 write)
 
 From this list, there are two functions we have implemented our selves and used for this project. These are the getline and strtok function.
+
+## Usage
+
+To use the shell you can clone the repo and compile all the source files. You can use the following command to compile the codes
+
+`gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh`
+
+After compilation just run the code, and it shall work.
+
+## Contributors
+
+Eyob Melkamu ([eyob721](https://github.com/eyob721 "eyob721"))
+
+Ezra Teshome ([Ezralx](https://github.com/Ezralx "Ezralx"))

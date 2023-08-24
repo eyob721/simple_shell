@@ -34,7 +34,7 @@
  *       has two arguments -> [0]: echo
  *                         -> [1]: Helloinside quotesWorld
  *
- * Note that the starting and ending quotatons are removed, if there are
+ * Note that the starting and ending quotations are removed, if there are
  * quotations in an argument. Whatever case it might be.
  *
  * So to remove this quotes found in an argument, we can shift the characters

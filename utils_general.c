@@ -20,21 +20,17 @@ char *concat_strings(unsigned int n, ...)
 		return (NULL);
 	cat_str_size = 1;
 	va_start(args, n);
-	while (i < n)
+	while (i++ < n)
 	{
 		arg_str = va_arg(args, char *);
 		if (arg_str == NULL)
-		{
-			free(cat_str);
-			return (NULL);
-		}
+			continue;
 		arg_str_len = _strlen(arg_str);
 		cat_str = _realloc(cat_str, cat_str_size, cat_str_size + arg_str_len);
 		if (cat_str == NULL)
 			break;
 		cat_str_size += arg_str_len;
 		_strcat(cat_str, arg_str);
-		++i;
 	}
 	va_end(args);
 	return (cat_str);

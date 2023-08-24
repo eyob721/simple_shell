@@ -13,12 +13,18 @@
 #define READ_ERR -1
 #define INTERACTIVE_MODE 1
 
-#define LINE_BUFF_SIZE 128
 #define STDIN_INPUT 0
 #define FILE_INPUT 1
 
 #define SPACE 0
 #define ARGUMENT  1
+
+#define WORD 0
+#define VARIABLE  1
+
+/* BUFFERS */
+#define CMD_BUF_SIZE 128
+#define LINE_BUFF_SIZE 128
 
 /* EXIT CODES */
 #define CMD_EXIT_FAILURE 2
@@ -31,7 +37,20 @@ extern char **environ;
 /* ------------------------------------------------------------------------- */
 
 /**
- * struct shell_data - data structure used to pass informations needed to
+ * struct shell_alias - a data structure used for alias list
+ * @alias_name: the alias name
+ * @real_name: the real name
+ * @next: pointer to the next alias node
+ */
+typedef struct shell_alias
+{
+	char *alias_name;
+	char *real_name;
+	struct shell_alias *next;
+} alias_t;
+
+/**
+ * struct shell_data - data structure used to pass information needed by the
  *                     executor functions.
  * @prg_name: the shell program name (av[0] of the shell program)
  * @line_buff: line buffer
@@ -44,6 +63,8 @@ extern char **environ;
  * @env_cur_start: pointer to the start of newly added variables in the
  *                 environ copy
  * @env_cur_end: pointer to the end of the environ copy
+ * @alias_head: head of the alias list
+ * @alias_tail: tail of the alias list
  *
  * Description:
  *     - The `env_cur_start` is used for tracking newly allocated variables. It
@@ -66,6 +87,8 @@ typedef struct shell_data
 	int env_count;
 	char **env_cur_start;
 	char **env_cur_end;
+	alias_t *alias_head;
+	alias_t *alias_tail;
 } shell_t;
 
 /**
@@ -84,6 +107,7 @@ typedef struct executor
 /* ------------------------------------------------------------------------- */
 
 void initialize_shell_data(shell_t *sh, char **av);
+void execute_commands(shell_t *sh);
 void (*get_executor(char *given_cmd))(shell_t *cmd);
 
 /* ------------------------------------------------------------------------- */
@@ -108,6 +132,7 @@ void remove_quotations(char *arg_start, char **arg_end);
 /* CLEANUP UTILS */
 void free_string_array(char **str_arr, int height);
 void free_environ(char **env_cur_start);
+void free_alias_list(alias_t *head);
 
 /* ENVIRONMENT UTILS */
 void _printenv(char *var);
@@ -116,15 +141,33 @@ int get_environ_count(void);
 char **get_environ_copy(int count);
 char **get_env_ptr(char *var);
 
+/* COMMAND UTILS */
+char *cmd_tok(char *cmd_line, char **next_cmd, char *next_opr);
+char *expand_variables(int exit_code, char *cmd);
+void write_cmd_buf(char ch, char **c_buf, int *i, int *s);
+char *get_value(int exit_status, char **var_ptr, char *c);
+char *remove_comments(char *cmd_line);
+
+/* ALIAS UTILS */
+void print_alias_list(alias_t *head);
+int print_alias_node(alias_t *head, char *given_name);
+int add_alias_node(alias_t **head, alias_t **tail, char *node);
+alias_t *search_alias_list(alias_t *head, char *given_name);
+char *substitute_alias_cmd(alias_t *head, char *cmd);
+
 /* TEST UTILS */
 void _printenv_test(int env_count, char **env_cur_start, char **env_cur_end);
 
-/* EXECUTORS */
+/* ------------------------------------------------------------------------- */
+/*                            SHELL - EXECUTORS                              */
+/* ------------------------------------------------------------------------- */
+
 void execute_builtin_exit(shell_t *cmd);
 void execute_builtin_env(shell_t *sh);
 void execute_builtin_unsetenv(shell_t *sh);
 void execute_builtin_setenv(shell_t *sh);
 void execute_builtin_cd(shell_t *sh);
+void execute_builtin_alias(shell_t *sh);
 void execute_system(shell_t *cmd);
 
 /* EXECUTOR FUNCTIONS */
@@ -136,5 +179,6 @@ void handle_cd_error(shell_t *sh);
 int cd_home(char *path);
 int cd_previous(void);
 int cd_path(char *given_path);
+
 /* ------------------------------------------------------------------------- */
 #endif

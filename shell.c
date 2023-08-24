@@ -10,10 +10,21 @@
 int main(int __attribute__((unused)) ac, char __attribute__((unused)) **av)
 {
 	int fd = STDIN_FILENO, mode, bytes_read;
-	void (*execute_cmd)(shell_t *cmd) = NULL;
 	shell_t shell;
 
 	initialize_shell_data(&shell, av);
+	if (ac >= 2)
+	{
+		fd = open(av[1], O_RDONLY);
+		if (fd == -1)
+		{
+			_dprintf(STDERR_FILENO, "%s: %d: Can't open %s\n",
+					shell.prg_name, shell.line_no, av[1]);
+			shell.exit_code = CMD_NOT_FOUND;
+			free_environ(shell.env_cur_start);
+			return (shell.exit_code);
+		}
+	}
 	mode = isatty(fd);
 	do {
 		if (mode == INTERACTIVE_MODE)
@@ -25,20 +36,16 @@ int main(int __attribute__((unused)) ac, char __attribute__((unused)) **av)
 		if (bytes_read != READ_EOF && bytes_read != READ_ERR)
 		{
 			++shell.line_no;
-			shell.cmd_ac = get_argument_count(shell.line_buff);
-			shell.cmd_av = get_argument_vector(shell.line_buff, shell.cmd_ac);
-			if (shell.cmd_av == NULL) /* Empty command */
-				continue;
-			execute_cmd = get_executor(shell.cmd_av[0]);
-			if (execute_cmd != NULL)
-				execute_cmd(&shell);
-			free_string_array(shell.cmd_av, shell.cmd_ac);
+			execute_commands(&shell);
 		}
 	} while (bytes_read != READ_EOF && bytes_read != READ_ERR);
 	if (bytes_read == READ_EOF && mode == INTERACTIVE_MODE)
 		_putchar('\n');
 	free(shell.line_buff);
 	free_environ(shell.env_cur_start);
+	free_alias_list(shell.alias_head);
+	if (ac >= 2)
+		close(fd);
 	return (shell.exit_code);
 }
 
@@ -63,6 +70,41 @@ void initialize_shell_data(shell_t *sh, char **av)
 	sh->env_count = get_environ_count();
 	environ = get_environ_copy(sh->env_count);
 	sh->env_cur_start = sh->env_cur_end = environ + sh->env_count;
+
+	/* Alias Initialization */
+	sh->alias_head = NULL;
+	sh->alias_tail = NULL;
+}
+
+/**
+ * execute_commands - executes commands found in the command line
+ * @sh: pointer to the shell data
+ *
+ * Return: void
+ */
+void execute_commands(shell_t *sh)
+{
+	void (*execute)(shell_t *cmd) = NULL;
+	char *cmd, *next_cmd = NULL, next_opr = '\0';
+
+	sh->line_buff = remove_comments(sh->line_buff);
+	cmd = cmd_tok(sh->line_buff, &next_cmd, &next_opr);
+	while (cmd != NULL)
+	{
+		cmd = substitute_alias_cmd(sh->alias_head, cmd);
+		cmd = expand_variables(sh->exit_code, cmd);
+		sh->cmd_ac = get_argument_count(cmd);
+		sh->cmd_av = get_argument_vector(cmd, sh->cmd_ac);
+		free(cmd);
+		execute = get_executor(sh->cmd_av[0]);
+		execute(sh);
+		free_string_array(sh->cmd_av, sh->cmd_ac);
+		if (next_opr == '&' && sh->exit_code != EXIT_SUCCESS)
+			break;
+		else if (next_opr == '|' && sh->exit_code == EXIT_SUCCESS)
+			break;
+		cmd = cmd_tok(NULL, &next_cmd, &next_opr);
+	}
 }
 
 /**
@@ -80,6 +122,7 @@ void (*get_executor(char *given_cmd))(shell_t *sh)
 		{"unsetenv", execute_builtin_unsetenv},
 		{"setenv", execute_builtin_setenv},
 		{"cd", execute_builtin_cd},
+		{"alias", execute_builtin_alias},
 		{NULL, execute_system}};
 	int i = 0;
 

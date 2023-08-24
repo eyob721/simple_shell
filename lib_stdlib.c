@@ -49,6 +49,33 @@ int _atoi(char *s)
 }
 
 /**
+ * _itoa - converts an integer to a string
+ * @n: integer to be converted
+ *
+ * Return: string of n, or NULL otherwise
+ */
+char *_itoa(int n)
+{
+	int i, digits = 1, temp = n, is_neg = 0;
+	char *num = NULL;
+
+	for (temp /= 10; temp; temp /= 10)
+		digits++;
+	is_neg = n < 0 ? 1 : 0;
+	if (is_neg)
+		digits++;
+	num = malloc(sizeof(char) * digits + 1); /* +1 for null byte */
+	if (num == NULL)
+		return (NULL);
+	_memset(num, '\0', digits + 1); /* initialize heap allocation */
+	for (temp = n, i = digits - 1; i >= 0; i--, temp /= 10)
+		num[i] = (temp % 10) + '0';
+	if (is_neg)
+		num[0] = '-';
+	return (num);
+}
+
+/**
  * _realloc - a function that reallocates a memory block using malloc and free
  * @ptr: pointer to the memory previously allocated with a call to malloc
  * @old_size: is the size in bytes, of the allocated space for ptr
