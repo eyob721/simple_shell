@@ -40,6 +40,6 @@ void execute_system(shell_t *sh)
 	{
 		wait(&child_status);
 		free(full_path);
-		sh->exit_code = WEXITSTATUS(child_status);
+		sh->exit_code = WEXITSTATUS(child_status); /* Exit code of the child */
 	}
 }

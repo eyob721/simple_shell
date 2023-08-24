@@ -1,4 +1,3 @@
-#include "lib.h"
 #include "shell.h"
 
 /**
@@ -40,6 +39,9 @@ char *cmd_tok(char *cmd_line, char **next_cmd, char *next_opr)
  * @cmd: command
  *
  * Return: command with the variables expanded, NULL otherwise.
+ * Description:
+ *     - A buffer is used to write the new command with the variables expanded
+ *       to their corresponding value.
  */
 char *expand_variables(int exit_code, char *cmd)
 {

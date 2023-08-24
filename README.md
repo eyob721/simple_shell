@@ -24,23 +24,23 @@ This project focuses on implementing the original shell program sh (/bin/sh).
 
 The shell handles some builtin commands and system commands. The following builtin commands are implemented.
 
-| Commands | Type | Description |
+| Commands | Description |
 | --- | --- | --- |
-| exit | builtin | Exits from the shell. It can take an exit code to exit with as argument. |
-| env | builtin | Prints all of the environment variables. |
-| setenv | builtin | Adds or overwrites an environment variable. Just like the set command in sh. |
-| unsetenv | builtin | Removes an environment variable. Just like unset command in sh. |
-| cd  | builtin | Change directory. |
-| alias | builtin | Defines an alias for a command. |
+| exit | Exits from the shell. It can take an exit code to exit with as argument. |
+| env | Prints all of the environment variables. |
+| setenv | Adds or overwrites an environment variable. Just like the set command in sh. |
+| unsetenv | Removes an environment variable. Just like unset command in sh. |
+| cd | Changes directory. |
+| alias | Defines an alias for a command. |
 
-The shell also handles
+The shell can take a file as an argument and run the commands in the file line
+by line. It also implements the following features.
 
-- command separator ;
-- Logical operators && and ||
-- comments, and
-- variable expansions
+- Command separator (;)
+- Logical operators (&& and ||)
+- Comments (#)
+- Variable expansions
 
-It can also take a file as input and run commands.
 
 ## Restrictions
 
@@ -82,11 +82,11 @@ From this list, there are two functions we have implemented our selves and used 
 
 ## Usage
 
-To use the shell you can clone the repo and compile all the source files. You can use the following command to compile the codes
+To use the shell you can clone the repo to your machine and compile all the source files. You can use the following command to compile the codes
 
 `gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh`
 
-After compilation just run the code, and it shall work.
+After compilation just run the executable `./hsh`, and it shall work.
 
 ## Contributors
 

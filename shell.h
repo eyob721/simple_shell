@@ -104,10 +104,7 @@ void (*get_executor(char *given_cmd))(shell_t *cmd);
 char *_which(char *file);
 int is_integer(char *str);
 char *concat_strings(unsigned int n, ...);
-
-/* INPUT UTILS */
 int read_line(int fd, char **line_buff, int *line_size);
-int read_line_char(int fd, char **line_buff, int *line_size);
 
 /* ARGUMENT UTILS */
 int get_argument_count(char *str);
@@ -123,26 +120,15 @@ void free_string_array(char **str_arr, int height);
 /* ENVIRONMENT UTILS */
 void _printenv(char *var);
 int get_environ_count(void);
-char **get_var_ptr(char *var);
 char *_getenv(const char *var);
 char **get_environ_copy(int count);
 
 /* COMMAND UTILS */
 char *remove_comments(char *cmd_line);
 char *expand_variables(int exit_code, char *cmd);
-void write_cmd_buf(char ch, char **c_buf, int *i, int *s);
 char *get_value(int exit_status, char **var_ptr, char *c);
+void write_cmd_buf(char ch, char **c_buf, int *i, int *s);
 char *cmd_tok(char *cmd_line, char **next_cmd, char *next_opr);
-
-/* ALIAS UTILS */
-void print_alias_list(alias_t *head);
-char *substitute_alias_cmd(alias_t *head, char *cmd);
-int print_alias_node(alias_t *head, char *given_name);
-alias_t *search_alias_list(alias_t *head, char *given_name);
-int add_alias_node(alias_t **head, alias_t **tail, char *node);
-
-/* TEST UTILS */
-void _printenv_test(int env_count);
 
 /* ------------------------------------------------------------------------- */
 /*                            SHELL - EXECUTORS                              */
@@ -156,11 +142,23 @@ void execute_builtin_alias(shell_t *sh);
 void execute_builtin_setenv(shell_t *sh);
 void execute_builtin_unsetenv(shell_t *sh);
 
-/* EXECUTOR FUNCTIONS */
-int _unsetenv(char *var, shell_t *sh);
-int _setenv(char *var, char *value, shell_t *sh);
-char **build_new_environ(shell_t *sh, char **vp, char *nv, int ne_sz);
+/* ------------------------------------------------------------------------- */
+/*                       SHELL - EXECUTORS UTILS                             */
+/* ------------------------------------------------------------------------- */
+/* ENVIRONMENT EXECUTORS UTILS */
+int _unsetenv(char *var, int *envc);
+int _setenv(char *var, char *value, int *envc);
+char **build_new_environ(int *envc, char **vp, char *nv, int ne_sz);
+char **get_var_ptr(char *var);
 
+/* ALIAS EXECUTOR UTILS */
+void print_alias_list(alias_t *head);
+char *substitute_alias_cmd(alias_t *head, char *cmd);
+int print_alias_node(alias_t *head, char *given_name);
+alias_t *search_alias_list(alias_t *head, char *given_name);
+int add_alias_node(alias_t **head, alias_t **tail, char *node);
+
+/* CD EXECUTOR UTILS */
 int cd_previous(void);
 int cd_home(char *path);
 int cd_path(char *given_path);

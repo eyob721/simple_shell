@@ -174,7 +174,9 @@ char *get_argument_end(char *arg_start)
  * @arg_end: a double pointer to the end of the argument
  *
  * Return: void
- * Description: The function adjusts the argument end after each shifting
+ * Description:
+ *     - Shifting is done for both the starting quote and ending quote
+ *     - The function adjusts the argument end after each shifting
  */
 void remove_quotations(char *arg_start, char **arg_end)
 {

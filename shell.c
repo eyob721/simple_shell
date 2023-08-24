@@ -116,13 +116,13 @@ void execute_commands(shell_t *sh)
 void (*get_executor(char *given_cmd))(shell_t *sh)
 {
 	executor_t cmd_exec[] = {
-		{"exit", execute_builtin_exit},
-		{"env", execute_builtin_env},
 		{"unsetenv", execute_builtin_unsetenv},
 		{"setenv", execute_builtin_setenv},
-		{"cd", execute_builtin_cd},
 		{"alias", execute_builtin_alias},
-		{NULL, execute_system}};
+		{"exit", execute_builtin_exit},
+		{"env", execute_builtin_env},
+		{"cd", execute_builtin_cd},
+	{NULL, execute_system}};
 	int i = 0;
 
 	if (given_cmd == NULL)
