@@ -74,6 +74,7 @@ void handle_cd_error(shell_t *sh)
 
 /**
  * cd_home - changes directory to HOME
+ * @given_path: given path to cd
  *
  * Return: 0 on success, or -1 on error
  * Description:
@@ -82,12 +83,12 @@ void handle_cd_error(shell_t *sh)
  *     - It will not be considered as an error, if there are no arguments
  *       passed (i.e. NULL).
  */
-int cd_home(char *path)
+int cd_home(char *given_path)
 {
 	char *home_path = NULL;
 
 	home_path = _getenv("HOME");
-	if (path == NULL && home_path == NULL)
+	if (given_path == NULL && home_path == NULL)
 		return (0);
 	else if (home_path == NULL)
 		return (-1);
