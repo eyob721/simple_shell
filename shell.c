@@ -13,6 +13,18 @@ int main(int __attribute__((unused)) ac, char __attribute__((unused)) * *av)
 	shell_t shell;
 
 	initialize_shell_data(&shell, av);
+	if (ac >= 2)
+	{
+		fd = open(av[1], O_RDONLY);
+		if (fd == -1)
+		{
+			_dprintf(STDERR_FILENO, "%s: %d: Can't open %s\n",
+					shell.prg_name, shell.line_no, av[1]);
+			shell.exit_code = CMD_NOT_FOUND;
+			free_environ(shell.env_cur_start);
+			return (shell.exit_code);
+		}
+	}
 	mode = isatty(fd);
 	do
 	{
@@ -33,6 +45,8 @@ int main(int __attribute__((unused)) ac, char __attribute__((unused)) * *av)
 	free(shell.line_buff);
 	free_environ(shell.env_cur_start);
 	free_alias_list(shell.alias_head);
+	if (ac >= 2)
+		close(fd);
 	return (shell.exit_code);
 }
 
@@ -74,10 +88,12 @@ void execute_commands(shell_t *sh)
 	void (*execute)(shell_t *cmd) = NULL;
 	char *cmd, *next_cmd = NULL, next_opr = '\0';
 
+	sh->line_buff = remove_comments(sh->line_buff);
 	cmd = cmd_tok(sh->line_buff, &next_cmd, &next_opr);
 	while (cmd != NULL)
 	{
 		cmd = substitute_alias_cmd(sh->alias_head, cmd);
+		cmd = expand_variables(sh->exit_code, cmd);
 		sh->cmd_ac = get_argument_count(cmd);
 		sh->cmd_av = get_argument_vector(cmd, sh->cmd_ac);
 		free(cmd);

@@ -127,7 +127,7 @@ char **get_environ_copy(int count)
  *               the given variable
  * @var: a given variable
  *
- * Return: poniter to the row on the environ with the given variable, or
+ * Return: pointer to the row on the environ with the given variable, or
  *         NULL otherwise.
  */
 char **get_env_ptr(char *var)

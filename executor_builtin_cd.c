@@ -1,4 +1,3 @@
-#include "lib.h"
 #include "shell.h"
 
 /**
@@ -8,10 +7,10 @@
  * Return: void
  * Description: The function follows the following steps
  *     - STEP 1:- First get the OLDPWD path, which is the current directory
- *                path before changeing directory.
+ *                path before changing directory.
  *     - STPE 2:- Change to the given directory.
  *     - STEP 3:- Then get the PWD path, which is the current directory path
- *                after changeing directory.
+ *                after changing directory.
  *              - Here the PWD must be printed, if the cd is given the argument
  *                "-", which cd to previous.
  *     - STEP 4:- Update PWD and OLDPWD in the environment.

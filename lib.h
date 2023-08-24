@@ -48,6 +48,7 @@ char *_strtok_r(char *str, char *delim, char **save_ptr);
 /* 3 */
 char *_strchr(char *s, char c);
 char *_strcpy(char *dest, char *src);
+char *_strstr(char *haystack, char *needle);
 
 /* ------------------------------------------------------------------------- */
 /*                             STDLIB LIBRARY                                */
@@ -55,6 +56,7 @@ char *_strcpy(char *dest, char *src);
 
 int _abs(int x);
 int _atoi(char *s);
+char *_itoa(int n);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 
 /* ------------------------------------------------------------------------- */

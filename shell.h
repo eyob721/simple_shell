@@ -13,12 +13,18 @@
 #define READ_ERR -1
 #define INTERACTIVE_MODE 1
 
-#define LINE_BUFF_SIZE 128
 #define STDIN_INPUT 0
 #define FILE_INPUT 1
 
 #define SPACE 0
 #define ARGUMENT  1
+
+#define WORD 0
+#define VARIABLE  1
+
+/* BUFFERS */
+#define CMD_BUF_SIZE 128
+#define LINE_BUFF_SIZE 128
 
 /* EXIT CODES */
 #define CMD_EXIT_FAILURE 2
@@ -44,7 +50,7 @@ typedef struct shell_alias
 } alias_t;
 
 /**
- * struct shell_data - data structure used to pass informations needed to
+ * struct shell_data - data structure used to pass information needed by the
  *                     executor functions.
  * @prg_name: the shell program name (av[0] of the shell program)
  * @line_buff: line buffer
@@ -137,6 +143,10 @@ char **get_env_ptr(char *var);
 
 /* COMMAND UTILS */
 char *cmd_tok(char *cmd_line, char **next_cmd, char *next_opr);
+char *expand_variables(int exit_code, char *cmd);
+void write_cmd_buf(char ch, char **c_buf, int *i, int *s);
+char *get_value(int exit_status, char **var_ptr, char *c);
+char *remove_comments(char *cmd_line);
 
 /* ALIAS UTILS */
 void print_alias_list(alias_t *head);
