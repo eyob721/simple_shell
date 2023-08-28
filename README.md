@@ -22,10 +22,10 @@ This project focuses on implementing the original shell program sh (/bin/sh).
 
 ## Features
 
-The shell handles some builtin commands and system commands. The following builtin commands are implemented.
+The shell handles builtin commands and system commands. The following builtin commands are implemented.
 
 | Commands | Description |
-| --- | --- | --- |
+| --- | --- |
 | exit | Exits from the shell. It can take an exit code to exit with as argument. |
 | env | Prints all of the environment variables. |
 | setenv | Adds or overwrites an environment variable. Just like the set command in sh. |
@@ -33,7 +33,7 @@ The shell handles some builtin commands and system commands. The following built
 | cd | Changes directory. |
 | alias | Defines an alias for a command. |
 
-The shell can take a file as an argument and run the commands in the file line
+The shell can also take a file as an argument and run the commands in the file line
 by line. It also implements the following features.
 
 - Command separator (;)
